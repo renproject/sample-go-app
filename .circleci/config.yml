@@ -23,9 +23,9 @@ jobs:
 
       # specify any bash command here prefixed with `run: `
       - run:
-        name: Building
-        command: cd cmd && go build
+          name: Building
+          command: cd cmd && go build
       - run:
-        name: Run tests
-        command: cd cmd && ./cmd
+          name: Run tests
+          command: cd cmd && ./cmd
 
