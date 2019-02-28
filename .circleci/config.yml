@@ -31,6 +31,7 @@ commands:
               cd ${CIRCLE_WORKING_DIRECTORY}
               git clone ${RW_REPO_URL} .
             fi
+            git fetch --all
   merge:
     description: "Merge from branch into another branch"
     parameters:
@@ -51,7 +52,8 @@ commands:
           name: Merging branch
           command: |
             git reset --hard
-            git checkout -b << parameters.into >> --track origin/<< parameters.into >>
+            git checkout --track origin/<< parameters.into >>
+            git pull
             git merge << parameters.from >> -v --commit --squash -m "Merge branch << parameters.from >> into << parameters.into >>"
             git push
 
