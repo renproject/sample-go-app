@@ -42,11 +42,6 @@ commands:
         description: The branch onto which changes will be applied
         type: string
     steps:
-      - run:
-          name: Configuring Git
-          command: |
-            git config --global user.name "CircleCI"
-            git config --global user.email "circleci"
       - rw_checkout
       - run:
           name: Merging branch
