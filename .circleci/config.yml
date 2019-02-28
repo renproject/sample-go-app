@@ -1,7 +1,7 @@
 # Golang CircleCI 2.0 configuration file
 #
 # Check https://circleci.com/docs/2.0/language-go/ for more details
-version: 2
+version: 2.1
 
 _defaults: &defaults
     docker:
@@ -11,6 +11,30 @@ _defaults: &defaults
       - GOCACHE: "/tmp/go/cache"
       - DEP_VERSION: 0.5.0
     working_directory: /go/src/github.com/renproject/sample-go-app
+
+commands:
+  merge:
+    description: "Merge from branch into another branch"
+    parameters:
+      from:
+        description: The branch with changes to be merged into another branch
+        type: string
+      into:
+        description: The branch onto which changes will be applied
+        type: string
+    steps:
+      - run:
+          name: Setup Git
+          command: |
+            git config --global url.ssh://git@github.com/renproject.insteadOf https://github.com/renproject
+            git config --global user.name "CircleCI"
+            git config --global user.email "circleci"
+      - checkout
+      - run:
+          name: Merging branch
+          command: |
+            "git checkout << parameters.into >>"
+            "git merge << parameters.from >> -v --commit --squash -m 'Merge branch << parameters.from >> into << parameters.into >>'"
 
 jobs:
   build:
