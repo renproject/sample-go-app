@@ -53,7 +53,7 @@ commands:
           command: |
             git reset --hard
             git checkout --track origin/<< parameters.into >>
-            git merge << parameters.from >> -v --no-ff -m "Merge branch << parameters.from >> into << parameters.into >>"
+            git merge << parameters.from >> -v --no-ff -m "CircleCI: Automatic merge of branch << parameters.from >> into << parameters.into >>"
             git push
 
 jobs:
