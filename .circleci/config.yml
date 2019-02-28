@@ -2,20 +2,18 @@
 #
 # Check https://circleci.com/docs/2.0/language-go/ for more details
 version: 2
-jobs:
-  build:
+
+_defaults: &defaults
     docker:
       # specify the version
       - image: circleci/golang:1.9
     environment:
       - GOCACHE: "/tmp/go/cache"
       - DEP_VERSION: 0.5.0
-      
-    #### TEMPLATE_NOTE: go expects specific checkout path representing url
-    #### expecting it in the form of
-    ####   /go/src/github.com/circleci/go-tool
-    ####   /go/src/bitbucket.org/circleci/go-tool
     working_directory: /go/src/github.com/renproject/sample-go-app
+
+_run:
+  clone: &clone
     steps:
       - run:
           name: Setup Git
@@ -39,6 +37,13 @@ jobs:
           key: gopkg-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
           paths:
               - /go/src/github.com/renproject/sample-go-app/vendor
+
+jobs:
+  build:
+    <<: *defaults
+
+    steps:
+      - run: *clone
       - restore_cache:
           keys:
               - build-cache-{{ .Branch }}-{{ .Environment.CIRCLE_PREVIOUS_BUILD_NUM }}
