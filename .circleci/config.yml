@@ -12,38 +12,36 @@ _defaults: &defaults
       - DEP_VERSION: 0.5.0
     working_directory: /go/src/github.com/renproject/sample-go-app
 
-_run:
-  clone: &clone
-    steps:
-      - run:
-          name: Setup Git
-          command: git config --global url.ssh://git@github.com/renproject.insteadOf https://github.com/renproject
-      - checkout
-      - restore_cache:
-          key: gopkg-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
-          paths:
-              - /go/src/github.com/renproject/sample-go-app/vendor
-      - run:
-          name: Download dependencies
-          command: |
-            if [ ! -d /go/src/github.com/renproject/sample-go-app/vendor ]; then
-                curl -L -s https://github.com/golang/dep/releases/download/v${DEP_VERSION}/dep-linux-amd64 -o /go/bin/dep
-                chmod +x /go/bin/dep
-                /go/bin/dep ensure -v
-            else
-                echo "Dependencies were restored from cache."
-            fi
-      - save_cache:
-          key: gopkg-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
-          paths:
-              - /go/src/github.com/renproject/sample-go-app/vendor
+_clone: &clone
+    - run:
+        name: Setup Git
+        command: git config --global url.ssh://git@github.com/renproject.insteadOf https://github.com/renproject
+    - checkout
+    - restore_cache:
+        key: gopkg-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
+        paths:
+            - /go/src/github.com/renproject/sample-go-app/vendor
+    - run:
+        name: Download dependencies
+        command: |
+          if [ ! -d /go/src/github.com/renproject/sample-go-app/vendor ]; then
+              curl -L -s https://github.com/golang/dep/releases/download/v${DEP_VERSION}/dep-linux-amd64 -o /go/bin/dep
+              chmod +x /go/bin/dep
+              /go/bin/dep ensure -v
+          else
+              echo "Dependencies were restored from cache."
+          fi
+    - save_cache:
+        key: gopkg-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
+        paths:
+            - /go/src/github.com/renproject/sample-go-app/vendor
 
 jobs:
   build:
     <<: *defaults
 
     steps:
-      - run: *clone
+      <<: *clone
       - restore_cache:
           keys:
               - build-cache-{{ .Branch }}-{{ .Environment.CIRCLE_PREVIOUS_BUILD_NUM }}
