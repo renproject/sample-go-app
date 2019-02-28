@@ -31,6 +31,8 @@ commands:
               cd ${CIRCLE_WORKING_DIRECTORY}
               git clone ${RW_REPO_URL} .
             fi
+            git fetch --all
+            git pull --all
   merge:
     description: "Merge from branch into another branch"
     parameters:
