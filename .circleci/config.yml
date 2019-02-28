@@ -85,3 +85,10 @@ jobs:
           key: build-cache-{{ .Branch }}-{{ .Environment.CIRCLE_BUILD_NUM }}
           paths:
               - /tmp/go/cache
+
+workflows:
+  version: 2.1
+  workflow:
+    jobs:
+    - build
+    - merge_nightly
