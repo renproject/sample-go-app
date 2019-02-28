@@ -26,14 +26,12 @@ commands:
       - run:
           name: Setup Git
           command: |
-            git config --global url.https://${GITHUB_TOKEN}@github.com/renproject.insteadOf https://github.com/renproject
             git config --global user.name "CircleCI"
             git config --global user.email "circleci"
-      - checkout
+            git clone -b << parameters.into >> https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
       - run:
           name: Merging branch
           command: |
-            git checkout << parameters.into >>
             git merge << parameters.from >> -v --commit --squash -m "Merge branch << parameters.from >> into << parameters.into >>"
             git push
 
