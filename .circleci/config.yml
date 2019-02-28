@@ -25,7 +25,7 @@ commands:
             then
               cd ${CIRCLE_WORKING_DIRECTORY}
               git remote set-url origin "${RW_REPO_URL}" || true
-              git fetch --force origin "<< parameters.from >>:remotes/origin/<< parameters.from >>"
+              git fetch --force origin "master:remotes/origin/master"
             else
               mkdir -p ${CIRCLE_WORKING_DIRECTORY}
               cd ${CIRCLE_WORKING_DIRECTORY}
