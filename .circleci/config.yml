@@ -32,6 +32,8 @@ jobs:
                 curl -L -s https://github.com/golang/dep/releases/download/v${DEP_VERSION}/dep-linux-amd64 -o /go/bin/dep
                 chmod +x /go/bin/dep
                 /go/bin/dep ensure -v
+            else
+                echo "Dependencies were restored from cache."
             fi
       - save_cache:
           key: gopkg-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
