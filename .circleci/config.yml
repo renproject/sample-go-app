@@ -7,25 +7,47 @@ jobs:
     docker:
       # specify the version
       - image: circleci/golang:1.9
+    environment:
+      - GOCACHE: "/tmp/go/cache"
+      - DEP_VERSION: 0.4.1
       
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
     #### TEMPLATE_NOTE: go expects specific checkout path representing url
     #### expecting it in the form of
     ####   /go/src/github.com/circleci/go-tool
     ####   /go/src/bitbucket.org/circleci/go-tool
     working_directory: /go/src/github.com/renproject/sample-go-app
     steps:
+      - run: git config --global url.ssh://git@github.com/renproject.insteadOf https://github.com/renproject
       - checkout
-
-      # specify any bash command here prefixed with `run: `
+      - restore_cache:
+          key: gopkg-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
+          paths:
+              - /go/src/github.com/renproject/sample-go-app/vendor
       - run:
-          name: Building
-          command: cd cmd && go build
+          name: Download dependencies
+          command: |
+            if [ ! -d /go/src/github.com/renproject/sample-go-app/vendor ]; then
+                curl -L -s https://github.com/golang/dep/releases/download/v${DEP_VERSION}/dep-linux-amd64 -o /go/bin/dep
+                chmod +x /go/bin/dep
+                /go/bin/dep ensure
+            fi
+      - save_cache:
+          key: gopkg-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
+          paths:
+              - /go/src/github.com/renproject/sample-go-app/vendor
+      - restore_cache:
+          keys:
+              - build-cache-{{ .Branch }}-{{ .Environment.CIRCLE_PREVIOUS_BUILD_NUM }}
+          paths:
+              - /tmp/go/cache
       - run:
-          name: Run tests
-          command: cd cmd && ./cmd
-
+          name: Building and testing
+          command: |
+            mkdir -p $GOCACHE
+            cd cmd
+            go build -v
+            ./cmd
+      - save_cache:
+          key: build-cache-{{ .Branch }}-{{ .Environment.CIRCLE_BUILD_NUM }}
+          paths:
+              - /tmp/go/cache
