@@ -25,7 +25,7 @@ commands:
             then
               cd ${CIRCLE_WORKING_DIRECTORY}
               git remote set-url origin "${RW_REPO_URL}" || true
-              git fetch --force origin "master:remotes/origin/master"
+              git fetch --force origin "<< parameters.from >>:remotes/origin/<< parameters.from >>"
             else
               mkdir -p ${CIRCLE_WORKING_DIRECTORY}
               cd ${CIRCLE_WORKING_DIRECTORY}
@@ -53,8 +53,7 @@ commands:
           command: |
             git reset --hard
             git checkout --track origin/<< parameters.into >>
-            git merge << parameters.from >> -v --squash
-            git commit -m "Merge branch << parameters.from >> into << parameters.into >>"
+            git merge << parameters.from >> -v --no-ff -m "Merge branch << parameters.from >> into << parameters.into >>"
             git push
 
 jobs:
