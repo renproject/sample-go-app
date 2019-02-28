@@ -43,7 +43,7 @@ commands:
         type: string
     steps:
       - run:
-          name: Setting up Git
+          name: Configuring Git
           command: |
             git config --global user.name "CircleCI"
             git config --global user.email "circleci"
@@ -66,9 +66,6 @@ jobs:
   build:
     <<: *defaults
     steps:
-      - run:
-          name: Setup Git
-          command: git config --global url.ssh://git@github.com/renproject.insteadOf https://github.com/renproject
       - checkout
       - restore_cache:
           key: gopkg-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
