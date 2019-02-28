@@ -17,7 +17,9 @@ jobs:
     ####   /go/src/bitbucket.org/circleci/go-tool
     working_directory: /go/src/github.com/renproject/sample-go-app
     steps:
-      - run: git config --global url.ssh://git@github.com/renproject.insteadOf https://github.com/renproject
+      - run:
+          name: Setup Git
+          command: git config --global url.ssh://git@github.com/renproject.insteadOf https://github.com/renproject
       - checkout
       - restore_cache:
           key: gopkg-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
