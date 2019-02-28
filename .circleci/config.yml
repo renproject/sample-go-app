@@ -58,6 +58,18 @@ jobs:
       - merge:
           from: master
           into: nightly
+  merge_beta:
+    <<: *defaults
+    steps:
+      - merge:
+          from: nightly
+          into: beta
+  merge_stable:
+    <<: *defaults
+    steps:
+      - merge:
+          from: beta
+          into: stable
   build:
     <<: *defaults
     steps:
@@ -99,7 +111,27 @@ jobs:
 
 workflows:
   version: 2.1
-  workflow:
+  build:
     jobs:
     - build
-    - merge_nightly
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - merge_nightly
+  monthly:
+    triggers:
+      - schedule:
+          cron: "0 0 1 * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - merge_beta
+      - merge_stable
