@@ -13,6 +13,24 @@ _defaults: &defaults
     working_directory: /go/src/github.com/renproject/sample-go-app
 
 commands:
+  rw_checkout:
+    description: "Checkout with Read/Write Privileges"
+    steps:
+      - run:
+          name: Setup Git
+          command: |
+            export RW_REPO_URL="https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
+
+            if [ -e ${CIRCLE_WORKING_DIRECTORY}/.git ]
+            then
+              cd ${CIRCLE_WORKING_DIRECTORY}
+              git remote set-url origin "${RW_REPO_URL}" || true
+              git fetch --force origin "master:remotes/origin/master"
+            else
+              mkdir -p ${CIRCLE_WORKING_DIRECTORY}
+              cd ${CIRCLE_WORKING_DIRECTORY}
+              git clone ${RW_REPO_URL} .
+            fi
   merge:
     description: "Merge from branch into another branch"
     parameters:
@@ -24,14 +42,16 @@ commands:
         type: string
     steps:
       - run:
-          name: Setup Git
+          name: Setting up Git
           command: |
             git config --global user.name "CircleCI"
             git config --global user.email "circleci"
-            git clone -b << parameters.into >> https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
+      - rw_checkout
       - run:
           name: Merging branch
           command: |
+            git reset --hard
+            git checkout << parameters.into >>
             git merge << parameters.from >> -v --commit --squash -m "Merge branch << parameters.from >> into << parameters.into >>"
             git push
 
