@@ -53,8 +53,8 @@ commands:
           command: |
             git reset --hard
             git checkout --track origin/<< parameters.into >>
-            git pull
-            git merge << parameters.from >> -v --commit --squash -m "Merge branch << parameters.from >> into << parameters.into >>"
+            git merge << parameters.from >> -v --squash
+            git commit -m "Merge branch << parameters.from >> into << parameters.into >>"
             git push
 
 jobs:
