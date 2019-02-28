@@ -33,13 +33,19 @@ commands:
       - run:
           name: Merging branch
           command: |
-            "git checkout << parameters.into >>"
-            "git merge << parameters.from >> -v --commit --squash -m 'Merge branch << parameters.from >> into << parameters.into >>'"
+            git checkout << parameters.into >>
+            git merge << parameters.from >> -v --commit --squash -m "Merge branch << parameters.from >> into << parameters.into >>"
+            git push
 
 jobs:
+  merge_nightly:
+    <<: *defaults
+    steps:
+      - merge:
+          from: master
+          into: nightly
   build:
     <<: *defaults
-
     steps:
       - run:
           name: Setup Git
