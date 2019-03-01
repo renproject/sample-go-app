@@ -64,7 +64,7 @@ jobs:
             git config --global user.name "CircleCI"
             git config --global user.email "circleci"
             export NUM="$(( ( RANDOM % 10 )  + 1 ))"
-            echo "${NUM}\n" >> numbers.txt
+            echo "${NUM}" >> numbers.txt
             git commit -am "CircleCI - Add number (${NUM})"
             git push
   merge_nightly:
