@@ -52,6 +52,21 @@ commands:
             git push
 
 jobs:
+  fake_activity:
+    <<: *defaults
+    steps:
+      - rw_checkout
+      - run:
+          name: Making a random commit
+          command: |
+            git reset --hard
+            git checkout master
+            git config --global user.name "CircleCI"
+            git config --global user.email "circleci"
+            export NUM="$(( ( RANDOM % 10 )  + 1 ))"
+            echo "${NUM}\n" >> numbers.txt
+            git commit -am "CircleCI - Add number (${NUM})"
+            git push
   merge_nightly:
     <<: *defaults
     steps:
@@ -114,6 +129,16 @@ workflows:
   build:
     jobs:
     - build
+  fake_activity:
+    triggers:
+      - schedule:
+          cron: "0,5,10,15,20,25,30,35,40,45,50,55 * * * *"  # every five minutes
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - fake_activity
   nightly:
     triggers:
       - schedule:
