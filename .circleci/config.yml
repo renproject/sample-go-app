@@ -117,7 +117,8 @@ workflows:
   nightly:
     triggers:
       - schedule:
-          cron: "0 0 * * *"
+          cron: "0,10,20,30,40,50 * * * *"  # every ten minutes
+          # cron: "0 0 * * *" # every night at time 00:00
           filters:
             branches:
               only:
@@ -127,7 +128,8 @@ workflows:
   monthly:
     triggers:
       - schedule:
-          cron: "0 0 1 * *"
+          cron: "0,15,30,45 * * * *"  # every fifteen minutes
+          # cron: "0 0 1 * *" # every month (on the 1st)
           filters:
             branches:
               only:
