@@ -10,7 +10,7 @@ _defaults: &defaults
     environment:
       - GOCACHE: "/tmp/go/cache"
       - DEP_VERSION: 0.5.0
-      - GHR_VERSION: 1.0.0
+      - GHR_VERSION: 0.12.0
     working_directory: /go/src/github.com/renproject/sample-go-app
 
 commands:
@@ -46,8 +46,9 @@ commands:
       - run:
           name: Install GHR
           command: |
-            sudo curl -L -s https://github.com/tcnksm/ghr-demo/releases/download/v${GHR_VERSION}/ghr-demo_linux_amd64 -o /usr/local/bin/ghr
-            sudo chmod +x /usr/local/bin/ghr
+            sudo curl -L -s https://github.com/tcnksm/ghr/releases/download/v${GHR_VERSION}/ghr_v${GHR_VERSION}_linux_amd64.tar.gz
+            tar xvzf ./ghr_v${GHR_VERSION}_linux_amd64.tar.gz
+            sudo mv ./ghr_v${GHR_VERSION}_linux_amd64/ghr /usr/local/bin
       - run:
           name: Deploy to Github Releases
           command: |
