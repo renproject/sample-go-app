@@ -138,7 +138,10 @@ workflows:
               only:
                 - master
     jobs:
-      - fake_activity
+      - fake_activity:
+          filters:
+            branches:
+              only: master
   nightly:
     triggers:
       - schedule:
@@ -149,7 +152,10 @@ workflows:
               only:
                 - master
     jobs:
-      - merge_nightly
+      - merge_nightly:
+          filters:
+            branches:
+              only: master
   monthly:
     triggers:
       - schedule:
@@ -160,8 +166,14 @@ workflows:
               only:
                 - master
     jobs:
-      - merge_stable
+      - merge_stable:
+          filters:
+            branches:
+              only: master
       - merge_beta:
+          filters:
+            branches:
+              only: master
           # Only run merge_beta after merge_stable is run
           requires:
             - merge_stable
