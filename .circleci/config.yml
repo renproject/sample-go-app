@@ -99,8 +99,6 @@ jobs:
     <<: *defaults
     steps:
       - rw_checkout
-      - patch_version:
-          file: config.json
       - deploy:
           file: config.json
   fake_activity:
