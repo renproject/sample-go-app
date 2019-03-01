@@ -46,8 +46,8 @@ commands:
       - run:
           name: Install GHR
           command: |
-            sudo curl -L -s https://github.com/tcnksm/ghr/releases/download/v${GHR_VERSION}/ghr_v${GHR_VERSION}_linux_amd64.tar.gz
-            tar xvzf ./ghr_v${GHR_VERSION}_linux_amd64.tar.gz
+            curl -L -s https://github.com/tcnksm/ghr/releases/download/v${GHR_VERSION}/ghr_v${GHR_VERSION}_linux_amd64.tar.gz -o ./ghr.tar.gz
+            tar xvzf ./ghr.tar.gz
             sudo mv ./ghr_v${GHR_VERSION}_linux_amd64/ghr /usr/local/bin
       - run:
           name: Deploy to Github Releases
