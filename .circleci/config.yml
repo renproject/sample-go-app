@@ -10,9 +10,50 @@ _defaults: &defaults
     environment:
       - GOCACHE: "/tmp/go/cache"
       - DEP_VERSION: 0.5.0
+      - GHR_VERSION: 1.0.0
     working_directory: /go/src/github.com/renproject/sample-go-app
 
 commands:
+  patch_version:
+    description: Patches the version key of a JSON file with branch name and date
+    parameters:
+      file:
+        description: The file to be patched
+        type: string
+    steps:
+      - run:
+          name: Install JQ
+          command: |
+            if ! [ -x "$(command -v jq)" ]; then
+              sudo apt-get install jq
+            fi
+      - run:
+          name: Patching version
+          command: |
+            branch=$(git branch | grep \* | cut -d ' ' -f2)
+            timestamp=$(date +"%Y%m%d")
+            tmp=$(mktemp)
+            suffix="-${branch_name}.${timestamp}"
+            jq '.version += $ENV.suffix' << parameters.file >> > "$tmp" && mv -f "$tmp" << parameters.file >>
+  deploy:
+    description: Deploy
+    parameters:
+      file:
+        description: The file to be patched and deployed
+        type: string
+    steps:
+      - patch_version:
+          file: << parameters.file >>
+      - run:
+          name: Install GHR
+          command: |
+            sudo curl -L -s https://github.com/tcnksm/ghr-demo/releases/download/v${GHR_VERSION}/ghr-demo_linux_amd64 -o /usr/local/bin/ghr
+            sudo chmod +x /usr/local/bin/ghr
+      - run:
+          name: Deploy to Github Releases
+          command: |
+            ver=$(jq -r '.version' package.json)
+            ghr "v${ver}" << parameters.file >>
   rw_checkout:
     description: "Checkout with Read/Write Privileges"
     steps:
@@ -52,6 +93,14 @@ commands:
             git push
 
 jobs:
+  deploy:
+    <<: *defaults
+    steps:
+      - rw_checkout
+      - patch_version:
+          file: config.json
+      - deploy:
+          file: config.json
   fake_activity:
     <<: *defaults
     steps:
@@ -129,6 +178,15 @@ workflows:
   build:
     jobs:
     - build
+  deploy:
+    jobs:
+      - deploy:
+          filters:
+            branches:
+              only:
+                - nightly
+                - beta
+                - stable
   fake_activity:
     triggers:
       - schedule:
