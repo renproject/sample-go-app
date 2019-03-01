@@ -135,5 +135,7 @@ workflows:
               only:
                 - master
     jobs:
-      - merge_beta
-      - merge_stable
+      - merge_beta:
+          # Run merge_stable before merge_beta
+          requires:
+            - merge_stable
