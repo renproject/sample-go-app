@@ -52,7 +52,7 @@ commands:
       - run:
           name: Deploy to Github Releases
           command: |
-            ver=$(jq -r '.version' package.json)
+            ver=$(jq -r '.version' << parameters.file >>)
             ghr "v${ver}" << parameters.file >>
   rw_checkout:
     description: "Checkout with Read/Write Privileges"
