@@ -178,7 +178,7 @@ workflows:
   build:
     jobs:
     - build
-    - deploy
+  # - deploy
   fake_activity:
     triggers:
       - schedule:
