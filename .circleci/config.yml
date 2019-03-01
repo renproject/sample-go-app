@@ -54,6 +54,9 @@ commands:
 jobs:
   fake_activity:
     <<: *defaults
+    branches:
+      only:
+        - master
     steps:
       - rw_checkout
       - run:
@@ -69,18 +72,27 @@ jobs:
             git push
   merge_nightly:
     <<: *defaults
+    branches:
+      only:
+        - master
     steps:
       - merge:
           from: master
           into: nightly
   merge_beta:
     <<: *defaults
+    branches:
+      only:
+        - master
     steps:
       - merge:
           from: nightly
           into: beta
   merge_stable:
     <<: *defaults
+    branches:
+      only:
+        - master
     steps:
       - merge:
           from: beta
