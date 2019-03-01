@@ -178,15 +178,7 @@ workflows:
   build:
     jobs:
     - build
-  deploy:
-    jobs:
-      - deploy:
-          filters:
-            branches:
-              only:
-                - nightly
-                - beta
-                - stable
+    - deploy
   fake_activity:
     triggers:
       - schedule:
