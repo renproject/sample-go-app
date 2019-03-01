@@ -48,7 +48,7 @@ commands:
           command: |
             git reset --hard
             git checkout --track origin/<< parameters.into >>
-            git merge << parameters.from >> -v
+            git merge origin/<< parameters.from >> -v
             git push
 
 jobs:
