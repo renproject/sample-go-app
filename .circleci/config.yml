@@ -33,8 +33,7 @@ commands:
             branch=$(git branch | grep \* | cut -d ' ' -f2)
             timestamp=$(date +"%Y%m%d")
             tmp=$(mktemp)
-            suffix="-${branch}.${timestamp}"
-            jq '.version += $ENV.suffix' << parameters.file >> > "$tmp" && mv -f "$tmp" << parameters.file >>
+            jq --arg suffix "-${branch}.${timestamp}" '.version += $suffix' << parameters.file >> > "$tmp" && mv -f "$tmp" << parameters.file >>
   deploy:
     description: Deploy
     parameters:
