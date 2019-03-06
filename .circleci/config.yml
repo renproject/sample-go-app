@@ -182,19 +182,6 @@ workflows:
     jobs:
     - build
   # - deploy
-  fake_activity:
-    triggers:
-      - schedule:
-          cron: "0 * * * *"  # every hour
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - fake_activity:
-          filters:
-            branches:
-              only: master
   nightly:
     triggers:
       - schedule:
