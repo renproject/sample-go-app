@@ -31,9 +31,12 @@ commands:
           name: Patching version
           command: |
             branch=$(git branch | grep \* | cut -d ' ' -f2)
-            timestamp=$(date +"%Y%m%d")
-            tmp=$(mktemp)
-            jq --arg suffix "-${branch}.${timestamp}" '.version += $suffix' << parameters.file >> > "$tmp" && mv -f "$tmp" << parameters.file >>
+            if [ "${branch}" != "stable" ]
+            then
+              timestamp=$(date +"%Y%m%d")
+              tmp=$(mktemp)
+              jq --arg suffix "-${branch}.${timestamp}" '.version += $suffix' << parameters.file >> > "$tmp" && mv -f "$tmp" << parameters.file >>
+            fi
   deploy:
     description: Deploy
     parameters:
