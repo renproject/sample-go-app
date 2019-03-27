@@ -153,22 +153,12 @@ jobs:
           key: gomod-{{ .Branch }}-{{ checksum "go.sum" }}
           paths:
               - ~/sample-go-app/vendor
-      - restore_cache:
-          keys:
-              - build-cache-{{ .Branch }}-{{ .Environment.CIRCLE_PREVIOUS_BUILD_NUM }}
-          paths:
-              - /tmp/go/cache
       - run:
           name: Building and testing
           command: |
-            mkdir -p $GOCACHE
             cd cmd
             go build -v
             ./cmd
-      - save_cache:
-          key: build-cache-{{ .Branch }}-{{ .Environment.CIRCLE_BUILD_NUM }}
-          paths:
-              - /tmp/go/cache
 
 workflows:
   version: 2.1
