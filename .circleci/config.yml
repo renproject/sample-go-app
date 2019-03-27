@@ -11,9 +11,7 @@ _defaults: &defaults
     docker:
       # specify the version
       - image: circleci/golang:1.12
-    environment:
-      - GOCACHE: "/tmp/go/cache"
-    working_directory: /go/src/github.com/renproject/sample-go-app
+    working_directory: ~/sample-go-app
 
 commands:
   patch_version:
@@ -141,11 +139,11 @@ jobs:
       - restore_cache:
           key: gomod-{{ .Branch }}-{{ checksum "go.sum" }}
           paths:
-              - /go/src/github.com/renproject/sample-go-app/vendor
+              - ~/sample-go-app/vendor
       - run:
           name: Download dependencies
           command: |
-            if [ ! -d /go/src/github.com/renproject/sample-go-app/vendor ]; then
+            if [ ! -d ~/sample-go-app/vendor ]; then
                 go mod download
                 go mod vendor
             else
@@ -154,7 +152,7 @@ jobs:
       - save_cache:
           key: gomod-{{ .Branch }}-{{ checksum "go.sum" }}
           paths:
-              - /go/src/github.com/renproject/sample-go-app/vendor
+              - ~/sample-go-app/vendor
       - restore_cache:
           keys:
               - build-cache-{{ .Branch }}-{{ .Environment.CIRCLE_PREVIOUS_BUILD_NUM }}
