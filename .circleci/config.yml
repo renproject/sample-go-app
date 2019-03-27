@@ -3,14 +3,16 @@
 # Check https://circleci.com/docs/2.0/language-go/ for more details
 version: 2.1
 
+
+orbs:
+    core: ren/circleci-orbs@dev:first
+
 _defaults: &defaults
     docker:
       # specify the version
       - image: circleci/golang:1.12
     environment:
       - GOCACHE: "/tmp/go/cache"
-      - DEP_VERSION: 0.5.0
-      - GHR_VERSION: 0.12.0
     working_directory: /go/src/github.com/renproject/sample-go-app
 
 commands:
@@ -46,12 +48,7 @@ commands:
     steps:
       - patch_version:
           file: << parameters.file >>
-      - run:
-          name: Install GHR
-          command: |
-            curl -L -s https://github.com/tcnksm/ghr/releases/download/v${GHR_VERSION}/ghr_v${GHR_VERSION}_linux_amd64.tar.gz -o ./ghr.tar.gz
-            tar xvzf ./ghr.tar.gz
-            sudo mv ./ghr_v${GHR_VERSION}_linux_amd64/ghr /usr/local/bin
+      - core/install_ghr
       - run:
           name: Deploy to Github Releases
           command: |
