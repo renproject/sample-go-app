@@ -139,7 +139,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: gopkg-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
+          key: gomod-{{ .Branch }}-{{ checksum "go.sum" }}
           paths:
               - /go/src/github.com/renproject/sample-go-app/vendor
       - run:
@@ -152,7 +152,7 @@ jobs:
                 echo "Dependencies were restored from cache."
             fi
       - save_cache:
-          key: gopkg-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
+          key: gomod-{{ .Branch }}-{{ checksum "go.sum" }}
           paths:
               - /go/src/github.com/renproject/sample-go-app/vendor
       - restore_cache:
