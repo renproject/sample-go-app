@@ -44,23 +44,6 @@ commands:
               tmp=$(mktemp)
               jq --arg suffix "-${branch}.${timestamp}" '.version += $suffix' << parameters.file >> > "$tmp" && mv -f "$tmp" << parameters.file >>
             fi
-  deploy:
-    description: Deploy
-    parameters:
-      file:
-        description: The file to be patched and deployed
-        type: string
-    steps:
-      - patch_version:
-          file: << parameters.file >>
-      - core/install_ghr
-      - run:
-          name: Deploy to Github Releases
-          command: |
-            ver=$(jq -r '.version' << parameters.file >>)
-            echo "v${ver}"
-            cat << parameters.file >>
-            ghr "v${ver}" << parameters.file >>
   merge:
     description: "Merge from branch into another branch"
     parameters:
@@ -86,9 +69,13 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - core/rw_checkout
-      - deploy:
-          file: config.json
+      - run:
+          name: Merging test into master
+          command: |
+            RW_REPO_URL="https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
+            git remote set-url origin "${RW_REPO_URL}" || true
+            git merge origin/test
+            git push
   fake_activity:
     <<: *defaults
     steps:
@@ -139,7 +126,7 @@ workflows:
   build:
     jobs:
     - build
-  # - deploy
+    - deploy
   nightly:
     triggers:
       - schedule:
