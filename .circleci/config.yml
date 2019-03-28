@@ -75,7 +75,9 @@ jobs:
           command: |
             RW_REPO_URL="https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
             git remote set-url origin "${RW_REPO_URL}" || true
-            git merge origin/test
+            git fetch --force --all
+            git checkout master
+            git merge test
             git push
   fake_activity:
     executor: default
