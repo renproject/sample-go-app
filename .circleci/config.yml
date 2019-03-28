@@ -61,25 +61,6 @@ commands:
             echo "v${ver}"
             cat << parameters.file >>
             ghr "v${ver}" << parameters.file >>
-  rw_checkout:
-    description: "Checkout with Read/Write Privileges"
-    steps:
-      - run:
-          name: Setup Git
-          command: |
-            export RW_REPO_URL="https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
-
-            if [ -e ${CIRCLE_WORKING_DIRECTORY}/.git ]
-            then
-              cd ${CIRCLE_WORKING_DIRECTORY}
-              git remote set-url origin "${RW_REPO_URL}" || true
-              git fetch --force origin "master:remotes/origin/master"
-            else
-              mkdir -p ${CIRCLE_WORKING_DIRECTORY}
-              cd ${CIRCLE_WORKING_DIRECTORY}
-              git clone ${RW_REPO_URL} .
-            fi
-            git fetch --all
   merge:
     description: "Merge from branch into another branch"
     parameters:
@@ -90,7 +71,8 @@ commands:
         description: The branch onto which changes will be applied
         type: string
     steps:
-      - rw_checkout
+      - checkout
+      - core/rw_checkout
       - run:
           name: Merging branch
           command: |
@@ -103,13 +85,15 @@ jobs:
   deploy:
     <<: *defaults
     steps:
-      - rw_checkout
+      - checkout
+      - core/rw_checkout
       - deploy:
           file: config.json
   fake_activity:
     <<: *defaults
     steps:
-      - rw_checkout
+      - checkout
+      - core/rw_checkout
       - run:
           name: Making a random commit
           command: |
@@ -121,24 +105,6 @@ jobs:
             echo "${NUM}" >> numbers.txt
             git commit -am "CircleCI - Add number (${NUM})"
             git push
-  merge_nightly:
-    <<: *defaults
-    steps:
-      - merge:
-          from: master
-          into: nightly
-  merge_beta:
-    <<: *defaults
-    steps:
-      - merge:
-          from: nightly
-          into: beta
-  merge_stable:
-    <<: *defaults
-    steps:
-      - merge:
-          from: beta
-          into: stable
   build:
     <<: *defaults
     steps:
