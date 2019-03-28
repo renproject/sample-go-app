@@ -1,0 +1,5 @@
+./numbers.txt
+./go.mod
+./README.md
+./config.json
+./cmd/cmd

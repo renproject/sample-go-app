@@ -14,6 +14,13 @@ _defaults: &defaults
     working_directory: ~/sample-go-app
 
 commands:
+  stable_release:
+    description: Creating Github Release
+    steps:
+      - core/install_ghr
+      - core/github_release:
+          tag: v$(make version)
+          filelist: ./files.txt
   patch_version:
     description: Patches the version key of a JSON file with branch name and date
     parameters:
@@ -159,6 +166,7 @@ jobs:
             cd cmd
             go build -v
             ./cmd
+      - stable_release
 
 workflows:
   version: 2.1
