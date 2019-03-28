@@ -136,7 +136,7 @@ workflows:
               only:
                 - master
     jobs:
-      - merge_nightly:
+      - core/merge_nightly:
           filters:
             branches:
               only: master
@@ -149,14 +149,14 @@ workflows:
               only:
                 - master
     jobs:
-      - merge_stable:
+      - core/merge_stable:
           filters:
             branches:
               only: master
-      - merge_beta:
+      - core/merge_beta:
           filters:
             branches:
               only: master
           # Only run merge_beta after merge_stable is run
           requires:
-            - merge_stable
+            - core/merge_stable
