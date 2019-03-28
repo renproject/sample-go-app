@@ -7,7 +7,8 @@ version: 2.1
 orbs:
     core: ren/circleci-orbs@dev:first
 
-_defaults: &defaults
+executors:
+  default:
     docker:
       # specify the version
       - image: circleci/golang:1.12
@@ -66,7 +67,7 @@ commands:
 
 jobs:
   deploy:
-    <<: *defaults
+    executor: default
     steps:
       - checkout
       - run:
@@ -77,7 +78,7 @@ jobs:
             git merge origin/test
             git push
   fake_activity:
-    <<: *defaults
+    executor: default
     steps:
       - checkout
       - core/rw_checkout
@@ -93,7 +94,7 @@ jobs:
             git commit -am "CircleCI - Add number (${NUM})"
             git push
   build:
-    <<: *defaults
+    executor: default
     steps:
       - checkout
       - restore_cache:
@@ -137,6 +138,7 @@ workflows:
                 - master
     jobs:
       - core/merge_nightly:
+          executor: default
           filters:
             branches:
               only: master
@@ -150,10 +152,12 @@ workflows:
                 - master
     jobs:
       - core/merge_stable:
+          executor: default
           filters:
             branches:
               only: master
       - core/merge_beta:
+          executor: default
           filters:
             branches:
               only: master
