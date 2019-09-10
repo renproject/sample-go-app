@@ -137,15 +137,18 @@ workflows:
   version: 2.1
   build:
     jobs:
-    - build
-    - deploy:
-        requires:
-          - build
-        filters:
-          tags:
-            only: /^v.*/
-          branches:
-            ignore: /.*/
+      - build:
+          filters:
+            tags:
+              only: /^v.*/
+      - deploy:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
 
 #  nightly:
 #    triggers:
