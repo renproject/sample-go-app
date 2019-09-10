@@ -19,9 +19,16 @@ commands:
     description: Creating Github Release
     steps:
       - core/install_ghr
+      - run:
+          name: Make zip
+          command: |
+            echo "tag is ${CIRCLE_TAG}"
+            zip -r release.zip $(cat ./files.txt)
+            echo "./release.zip" > "release_name"
       - core/github_release:
-          tag: v$(make version)
-          filelist: ./files.txt
+          tag: $CIRCLE_TAG
+          replace: true
+          filelist: release_name
   patch_version:
     description: Patches the version key of a JSON file with branch name and date
     parameters:
@@ -69,16 +76,19 @@ jobs:
   deploy:
     executor: default
     steps:
-      - checkout
-      - run:
-          name: Merging test into master
-          command: |
-            RW_REPO_URL="https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
-            git remote set-url origin "${RW_REPO_URL}" || true
-            git fetch --force --all
-            git checkout master
-            git merge test
-            git push
+      - stable_release
+
+# - checkout
+# - run:
+#     name: Merging test into master
+#     command: |
+#       RW_REPO_URL="https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
+#       git remote set-url origin "${RW_REPO_URL}" || true
+#       git fetch --force --all
+#       git checkout master
+#       git merge test
+#       git push
+
   fake_activity:
     executor: default
     steps:
@@ -122,7 +132,6 @@ jobs:
             cd cmd
             go build -v
             ./cmd
-      - stable_release
 
 workflows:
   version: 2.1
@@ -130,6 +139,13 @@ workflows:
     jobs:
     - build
     - deploy
+        requires:
+          - build
+        filters:
+          tags:
+            only: /^v.*/
+          branches:
+            ignore: /.*/
 
 #  nightly:
 #    triggers:
